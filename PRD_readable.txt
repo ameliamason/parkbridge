@@ -1,0 +1,513 @@
+ParkBridge
+Product Requirements Document
+Version 0.1 | DRAFT
+June 2026
+Document Owner
+TBC
+
+Status
+Draft for review
+
+Target Market
+United Kingdom
+
+Phase
+MVP: Search, Compare, Identify, Deep-link
+
+1. Executive Summary
+ParkBridge is a mobile-first parking intelligence platform for UK drivers. It solves two distinct but linked friction points: the pre-journey problem of finding and comparing parking options before leaving home, and the at-car problem of identifying the correct parking provider and payment method once parked.
+
+The product is positioned as Trainline for parking with CityMapper-style contextual awareness. It is not a payment processor in its initial form. It is an intelligent aggregator, identifier, and router that makes finding and paying for parking faster and less frustrating.
+
+Phase 1 (MVP) delivers: destination search, parking comparison, GPS-based provider identification, and deep-links to provider apps/websites. Payment aggregation is a Phase 3 objective, contingent on API availability and commercial agreements.
+
+2. Problem Statement
+2.1 The Pre-Journey Problem
+When a UK driver decides to drive to a destination, they have limited ability to research parking options in advance. Key pain points:
+No single source shows all nearby parking across on-street, car parks, and private providers
+Price comparison across providers (NCP, Q-Park, APCOA, JustPark, YourParkingSpace etc) requires visiting multiple apps or websites
+Restrictions (resident permit zones, time limits, loading bays, EV-only bays) are not surfaced upfront
+Opening hours and pre-booking availability are fragmented across provider sites
+Journey planning tools (Google Maps, Waze, Apple Maps) do not surface parking price or restriction data meaningfully
+
+2.2 The At-Car Problem
+Once parked, many drivers do not know which app to use to pay. The UK parking market is highly fragmented across ~10+ active payment apps. This creates:
+Confusion and wasted time walking to a pay-and-display machine or signage to find a zone code
+Failed payments when users download the wrong app or enter the wrong location code
+Overpayment or underpayment due to misidentification of tariff zone
+PCNs (penalty charge notices) issued while the driver is still trying to figure out how to pay
+
+Market Context
+The UK has approximately 10,000+ car parks and millions of on-street spaces managed by a fragmented mix of local authorities, private operators, and independent landowners. No single platform currently solves discovery, comparison, and identification in one journey.
+
+3. Vision and Goals
+3.1 Product Vision
+ParkBridge becomes the default starting point for any UK parking decision. Whether you are planning a trip three days out or standing next to your car in an unfamiliar street, ParkBridge gives you the right information and the fastest route to payment.
+
+3.2 Strategic Goals
+Reduce the average time-to-payment for a UK driver to under 90 seconds from arrival
+Become the most comprehensive UK parking data aggregator, combining structured provider data with user-contributed corrections
+Build a defensible data asset that improves with scale
+Create a distribution channel that parking providers are willing to pay for (performance marketing model)
+Position for Phase 3 unified payment aggregation once API relationships exist
+
+3.3 Success Metrics (MVP)
+Metric
+Target (Month 3)
+Target (Month 6)
+
+Provider correctly identified at car
+85% accuracy
+93% accuracy
+
+Time to correct deep-link from GPS trigger
+< 15 seconds
+< 10 seconds
+
+Pre-journey search sessions ending in navigation
+> 40%
+> 55%
+
+User-submitted corrections actioned within 48h
+100%
+100%
+
+DAU / MAU ratio
+> 0.15
+> 0.25
+
+4. Target Users
+4.1 Primary Personas
+Persona 1: The Journey Planner
+Age 28-55. Driving to an unfamiliar area (city centre, hospital, sports venue, tourist attraction). Books ahead when possible, anxious about parking costs and availability. Uses Google Maps but wishes it showed pricing. Currently visits 2-3 sites to compare. Values: certainty, price transparency, no surprises.
+
+Persona 2: The Spontaneous Parker
+Age 22-45. Has just parked. Does not know the provider or zone code. Standing next to the car, often in a hurry. Currently has to walk to a sign or machine. May have 5-10 apps already installed. Values: speed, accuracy, one-tap access.
+
+Persona 3: The Regular Commuter
+Age 30-60. Parks in the same location most days but occasionally parks elsewhere. Knows their usual spot but struggles in new areas. Values: saved favourites, habit integration, speed.
+
+4.2 Secondary Users
+Fleet drivers and delivery drivers needing fast identification in unfamiliar areas
+Visitors to the UK unfamiliar with the fragmented payment landscape
+Accessibility-focused drivers needing to identify Blue Badge bays quickly
+
+4.3 Out of Scope (Phase 1)
+Cyclists, motorcyclists, and EV charging (flag for Phase 2)
+Commercial fleet management or bulk booking
+Non-UK markets
+
+5. Feature Requirements
+5.1 Core Feature Set: Phase 1 (MVP)
+F1: Destination Search and Parking Discovery
+The user enters a destination (address, postcode, POI name, or event venue) and sees a map view with all nearby parking options surfaced within a configurable radius (default 400m, adjustable to 800m and 1.5km).
+
+Requirements:
+Autocomplete powered by Google Places API or equivalent, biased to UK locations
+Results displayed on map AND as a sortable list (price, distance, rating, availability)
+Filter options: price range, indoor/outdoor, 24-hour, accessible bays, pre-book only, on-street only, car park only
+Each result shows: provider logo, distance, price per hour, daily max, opening hours, and restrictions summary
+Tapping a result shows a detail card with full tariff breakdown, restrictions, user-submitted notes, and a CTA
+Google Maps/Apple Maps navigation deep-link to the car park entrance (not just a postcode)
+
+F2: GPS-Based Provider Identification (At-Car Mode)
+When the user opens ParkBridge after parking (or taps 'I am parked'), the app uses device GPS to identify the parking location and surface the correct provider, zone code, and payment route.
+
+Requirements:
+Location accuracy target: within 10 metres
+On detection, app displays: provider name, provider logo, zone/location code, applicable tariff, and a prominent deep-link CTA
+Deep-link opens the correct provider app at the payment screen (not just the home screen) where the provider supports it
+If GPS signal is weak (multi-storey, underground), fallback to: manual postcode entry, QR code scan (where car parks display them), or visual landmark search
+'I don't recognise this' feedback option triggers a correction workflow
+Support for on-street, pay-and-display, private car parks, and ANPR-exit car parks with different payment UX notes
+
+F3: Deep-Link Directory (All UK Parking Providers)
+ParkBridge maintains a structured directory of all active UK parking payment apps and providers with deep-link routing logic. This is a core data asset.
+
+Providers to be included at launch (non-exhaustive, should be comprehensive at launch):
+Provider
+Type
+Notes
+
+RingGo
+On-street, car parks
+Largest UK on-street network
+
+PayByPhone
+On-street, car parks
+Strong LA partnerships
+
+JustPark
+Private, residential, car parks
+Marketplace model
+
+APCOA Connect
+APCOA-managed car parks
+App + web
+
+NCP
+NCP-owned car parks
+Pre-book and ANPR
+
+Q-Park
+City centre multi-storeys
+Pre-book focus
+
+YourParkingSpace
+Private spaces marketplace
+Hourly and monthly
+
+ParkMobile
+LA partnerships
+Strong London presence
+
+Ringo / AppyParking
+Legacy networks
+Some LA tie-ins remain
+
+Flowbird
+LA-issued terminals
+App and SMS payment
+
+Passport Parking
+Some council deployments
+Less common
+
+iParq
+Private sites
+App and web
+
+ParkWhiz / Arrive
+Aggregator (US-origin)
+Limited UK coverage
+
+Local Authority Apps
+Council-specific
+Bristol, Manchester, etc.
+
+National Parking Platform (NPP)
+DLUHC initiative
+Target integration when accessible
+
+F4: User Feedback and Data Quality Loop
+Given that no single data source will be complete or fully accurate, ParkBridge must build a structured mechanism for user corrections that feeds back into the data layer.
+
+Requirements:
+After any parking session (detected via session end or manual trigger), prompt: 'Was this information correct?'
+One-tap correction categories: Wrong provider / Wrong zone code / Wrong price / Space no longer exists / New provider not listed
+Corrections reviewed by an admin queue before updating the live database (no unmoderated user edits in Phase 1)
+Top contributors surfaced with optional gamification (badges, streak indicators) in Phase 2
+Admin dashboard showing correction volume by location, enabling prioritisation of data cleaning
+
+F5: Saved Locations and Favourites
+Users can save frequently used destinations and parking spots for fast recall. Requirements:
+Save any car park or on-street zone as a Favourite
+'Home', 'Work', and custom labels
+One-tap repay from Favourites list using last-used provider
+Notification: alert if a saved location changes provider, pricing, or availability
+
+5.2 Phase 2 Features (Post-MVP, 6-12 Months)
+Pre-booking integration for providers offering advance reservations (JustPark, NCP, Q-Park, YourParkingSpace)
+Price prediction: 'This car park is typically cheaper on Saturday mornings'
+EV charging bay identification and cross-reference to Zap-Map or similar
+Blue Badge bay locator and accessibility filter
+Business account: expense receipt generation per parking session
+Calendar integration: auto-surface parking options for upcoming diary events with a location
+Parking overstay alerts (GPS-triggered, opt-in)
+PCN appeal assistant: capture timestamped evidence and signage photos
+National Parking Platform (NPP) integration if API access becomes available
+
+5.3 Phase 3 Features (12-24 Months, Subject to API Access)
+Unified in-app payment: user pays through ParkBridge, which routes to the provider via API
+Single wallet: store one payment method, use across all supported providers
+Automated session extension: detect if user is still parked and prompt to extend before expiry
+Employer/fleet accounts with centralised billing and reporting
+B2B data product: anonymised parking demand and availability data sold to local authorities, developers, and urban planners
+
+6. Maps and Location Architecture
+6.1 Maps Provider Strategy
+Maps are the core UX surface for ParkBridge. The choice of maps provider affects accuracy, cost at scale, and feature availability.
+
+Provider
+Strengths
+Weaknesses / Considerations
+
+Google Maps Platform
+Best geocoding accuracy in UK, Street View, Place Search, strong POI data, deep-link support
+Cost at scale (pricing per API call), Google ecosystem dependency
+
+Mapbox
+Highly customisable styling, competitive pricing, good UK coverage, open-source base
+Weaker POI data than Google, less familiar to users
+
+HERE Maps
+Strong UK local authority data partnerships, good for on-street data
+Less developer-friendly, smaller community
+
+OS Maps (Ordnance Survey)
+Definitive UK street and land data, good for on-street precision
+Higher licensing cost, no real-time traffic
+
+Recommendation
+Phase 1: Google Maps Platform for geocoding, place search, and navigation deep-links. Mapbox for the styled parking map layer to control visual customisation and manage cost. Evaluate migration to a unified Mapbox or HERE solution at Series A scale.
+
+6.2 GPS Location Stack
+The at-car identification feature depends on precise GPS. The implementation must account for the realities of UK urban parking environments:
+Standard GPS accuracy: 3-10 metres outdoors (sufficient for car park boundary identification)
+Multi-storey car parks: GPS often fails above floor 2. Use Wi-Fi positioning + Bluetooth beacons (Phase 2) or fallback to manual floor/zone entry
+Underground car parks (Westfield, city centre): GPS fails entirely. Fallback: QR code scan at entry, or manual location entry
+On-street parking: GPS is accurate enough in most cases. Cross-reference with OS MasterMap and council boundary data to identify zone code
+Implementation: use W3C Geolocation API (browser) or React Native Location for native app. Layer with reverse geocoding to convert coordinates to street + zone
+
+6.3 Geofencing for Zone Identification
+Each parking zone (LA zone, car park polygon, private site boundary) must be represented as a geofence polygon in the ParkBridge data layer. When the user's GPS position falls within a polygon, the associated provider and zone code are surfaced.
+Data sources for geofence polygons: OS Open Zoomstack, council open data portals, manual mapping for high-priority locations, user corrections
+Car park boundary polygons: sourced initially from Google Places data + OpenStreetMap, then refined with satellite imagery
+On-street zone boundaries: sourced from council published CPZ (Controlled Parking Zone) shapefiles, available for most LAs via data.gov.uk
+Confidence scoring: each geofence has a confidence score. Low-confidence matches surface a 'Does this look right?' confirmation step
+
+7. Data Architecture
+7.1 Core Data Entities
+Entity
+Key Fields
+Primary Data Source
+
+ParkingLocation
+ID, name, type (on-street/car park/private), lat/lng, polygon boundary, provider_id, zone_code, tariff_id, opening_hours, accessibility_flags
+OpenStreetMap, Google Places, provider data feeds, manual entry
+
+Provider
+ID, name, logo, deep_link_schema, iOS_app_id, Android_package, web_fallback_url, payment_methods, API_available (bool)
+Manual curation, provider websites
+
+Tariff
+ID, location_id, rate_type, price_per_hour, daily_max, weekly_max, free_period_minutes, valid_from, valid_to, day_restrictions
+Provider data, manual entry, user corrections
+
+UserSession
+ID, user_id, location_id, provider_id, session_start, session_end (optional), deep_link_triggered (bool), feedback_submitted
+App-generated
+
+UserCorrection
+ID, session_id, location_id, correction_type, original_value, suggested_value, status (pending/approved/rejected), reviewed_by
+User-submitted
+
+7.2 Data Collection Strategy
+ParkBridge cannot rely on a single authoritative source. The data layer must be assembled from multiple inputs:
+OpenStreetMap: car park polygons, on-street lanes, basic attributes. Free, community-maintained, patchy on pricing
+data.gov.uk: council CPZ shapefiles, Traffic Regulation Orders (TROs), PROW data. Gold standard for on-street legal restrictions but inconsistently published
+Provider APIs and data feeds: where available (JustPark has a developer programme, APCOA has some data partnerships, NPP eventually). Priority target for commercial data agreements
+Google Places API: car park locations, opening hours, user reviews. Good coverage, not always accurate on pricing
+Manual data entry and scraping: for high-priority locations (city centres, airports, hospitals, sports venues) where automated sources are incomplete
+User corrections: treated as a continuous improvement feed, moderated before publication
+
+7.3 National Parking Platform (NPP)
+NPP Context
+The National Parking Platform is a DLUHC-backed initiative to create a standardised API layer across UK parking operators. At time of writing, it is in limited rollout with select local authorities and operators. ParkBridge should monitor NPP developments closely and architect the data layer to accept NPP-format data when it becomes accessible. NPP integration in Phase 2-3 could dramatically reduce manual data acquisition cost.
+
+8. Technical Architecture
+8.1 Recommended Stack
+Layer
+Recommendation
+Rationale
+
+Frontend (Web)
+React + Next.js (PWA)
+Mobile-first PWA reduces app store dependency for MVP. SSR for SEO on location pages.
+
+Mobile App
+React Native (Expo)
+Single codebase for iOS and Android. Phase 1 can ship as PWA; native app for Phase 2 when GPS precision and deep-link handling improve.
+
+Backend API
+Node.js / TypeScript on AWS Lambda or Railway
+Serverless for cost efficiency at low initial scale. Easy to containerise later.
+
+Database
+PostgreSQL + PostGIS
+PostGIS is essential for geospatial queries (point-in-polygon, radius search). Supabase is a fast-start option.
+
+Maps
+Google Maps API + Mapbox GL JS
+Google for geocoding/places; Mapbox for custom-styled parking layer
+
+Geocoding
+Google Geocoding API (primary), postcodes.io (UK fallback)
+postcodes.io is free and highly accurate for UK postcodes
+
+Search
+Typesense or Algolia
+Fast autocomplete for destination search with geo-weighting
+
+Auth
+Clerk or Supabase Auth
+Social login + email. Minimise friction at onboarding.
+
+Analytics
+PostHog (self-hosted or cloud)
+Product analytics, session recording, feature flags. GDPR-friendly.
+
+Admin / CMS
+Retool or custom Next.js admin
+For data moderation queue, correction review, and provider management
+
+8.2 Deep-Link Architecture
+Provider deep-links must be maintained as structured URL/URI templates rather than hardcoded strings. Each provider record in the database stores:
+iOS universal link scheme (e.g. ringgo://pay?location={zone_code})
+Android intent URI
+Web fallback URL for when the app is not installed
+App Store / Play Store URL for install prompt if app not detected
+Detection method: attempt deep-link, catch failure, redirect to web fallback
+Note: deep-link schemas must be manually verified against each provider's published documentation and tested on device. Several UK providers do not publicly document their deep-link schemas; these will require reverse-engineering or direct partnership conversations.
+
+8.3 Geospatial Query Design
+The core at-car identification query: given a GPS coordinate (lat, lng), return the intersecting parking zone(s) ordered by confidence score. PostgreSQL + PostGIS query pattern:
+SELECT p.*, t.price_per_hour, pr.deep_link_schema
+FROM parking_locations p
+JOIN tariffs t ON t.location_id = p.id
+JOIN providers pr ON pr.id = p.provider_id
+WHERE ST_Contains(p.boundary, ST_SetSRID(ST_MakePoint($lng, $lat), 4326))
+ORDER BY p.confidence_score DESC LIMIT 3;
+
+9. User Experience Principles
+9.1 Design Philosophy
+ParkBridge is used in high-stress, time-pressured moments. Design must optimise for speed and certainty, not comprehensiveness.
+Two modes, two entry points: 'Plan a Journey' (pre-travel) and 'I Am Parked' (at-car). These should be the first choice the user makes on opening the app
+Zero unnecessary steps: the at-car flow must reach a deep-link CTA within two taps from the home screen
+Confidence indicators: always show the user how certain ParkBridge is about its identification. 'We are 97% confident this is RingGo zone 8821' is better than a silent wrong answer
+Error recovery: make it easy and non-punitive to say 'this is wrong'. The correction flow must feel like helping, not reporting a bug
+Offline tolerance: core provider and zone data should be cached locally so the app functions with poor signal
+
+9.2 Critical User Flows
+Flow 1: Pre-Journey Parking Search
+User opens app, taps 'Plan a Journey'
+Enters destination (autocomplete, postcode, or POI search)
+Map loads with parking options pinned by distance. List view available below.
+User applies filters (price, type, accessible, pre-book)
+Taps a result: detail card shows full tariff, provider, restrictions, and 'Navigate Here' CTA
+'Navigate Here' deep-links to Google Maps / Apple Maps with car park entrance pin
+
+Flow 2: At-Car Provider Identification
+User parks. Opens ParkBridge and taps 'I Am Parked'
+GPS activates. Loading state: 'Identifying your parking location...'
+Result card: provider logo, zone code, tariff summary, and 'Pay Now' CTA
+'Pay Now' triggers deep-link to provider app at payment screen (or web fallback)
+On return to ParkBridge: 'Was that correct?' feedback prompt
+If GPS fails: fallback options shown (manual postcode, QR scan)
+
+10. Monetisation Strategy
+10.1 Phase 1: No Revenue (Data-Building Phase)
+MVP is free to use. The goal is to build the data asset, user base, and provider relationships. Do not compromise UX with advertising at this stage.
+
+10.2 Phase 2 Revenue Streams
+Performance referral fees from parking providers: ParkBridge earns a small fee per deep-link session that converts to a paid parking event. Model: 2-5% of transaction value or a fixed per-session fee
+Featured placement: providers pay to appear at the top of relevant search results (clearly labelled as 'Sponsored'). Similar to Trainline's promoted rail tickets model
+Pre-booking commission: for car parks where ParkBridge facilitates a pre-booking, earn a booking margin (5-12%, aligned with JustPark / NCP existing affiliate rates)
+
+10.3 Phase 3 Revenue Streams
+Payment processing margin: if ParkBridge becomes a unified payment aggregator, earn a margin on transaction processing (1-2% net of interchange)
+B2B data licensing: anonymised, aggregated parking demand data sold to urban planning consultancies, local authorities, and property developers
+White-label: licence the identification and deep-link engine to navigation apps, mapping tools, and fleet management platforms
+Business accounts: subscription tier for SMEs and fleet operators needing expense reporting and multi-driver management
+
+11. Risks and Mitigations
+Risk
+Severity
+Likelihood
+Mitigation
+
+GPS fails in urban canyons and multi-storey car parks
+High
+High
+QR code fallback, manual entry, floor/level selection for multi-storey
+
+Provider deep-link schemas change without notice
+Medium
+Medium
+Automated deep-link testing suite; fallback to web URL; user reports surface failures quickly
+
+Parking data is incomplete or stale, causing user errors and PCNs
+High
+High
+Confidence scoring, prominent 'verify against signage' disclaimer, moderated correction loop
+
+Providers resist deep-linking (see this as competition)
+Medium
+Medium
+Position as distribution channel, not competitor. Revenue share model. Phased commercial approach.
+
+Google Maps / Mapbox pricing escalates at scale
+Medium
+Low-Medium
+Architecture allows map provider swap. Monitor usage vs. thresholds. Tile caching.
+
+NPP or a large player (Google, Apple) launches competing feature
+High
+Low-Medium
+Build data quality and user trust as moat. Focus on depth (UK-specific) vs. breadth.
+
+GDPR / location data compliance
+High
+Low (if handled correctly)
+Minimise persistent storage of location data. Clear consent flows. Location data used for identification only, not stored by default.
+
+12. Phased Roadmap
+Phase
+Timeline
+Key Deliverables
+Exit Criteria
+
+0: Foundation
+Months 1-2
+Data model design, PostGIS setup, initial parking data load for 3 pilot cities (London, Manchester, Birmingham), provider deep-link directory (all major UK providers), admin data moderation tool
+Geofence polygon coverage for 500+ locations. Deep-links tested and verified for top 8 providers.
+
+1: MVP (PWA)
+Months 3-5
+Pre-journey search and comparison map, GPS at-car identification flow, provider deep-links, user correction workflow, basic favourites, mobile-first PWA
+85% identification accuracy in pilot cities. 500 MAU. User feedback loop live.
+
+2: Growth
+Months 6-12
+Native iOS/Android app, UK-wide data coverage, pre-booking for key providers, Blue Badge bays, EV charging overlay, business accounts beta, first commercial provider agreements
+5,000 MAU. First revenue from referral fees. 93% identification accuracy.
+
+3: Aggregation
+Months 12-24
+Unified in-app payment (provider-permitting), NPP integration, B2B data product, white-label discussions, Series A preparation
+50,000 MAU. Positive unit economics on referral model. NPP pilot live.
+
+13. Open Questions for Stakeholder Review
+The following questions require answers from the product owner, technical team, or legal counsel before this PRD can be finalised:
+
+Q1: Geographic Scope for MVP Launch
+Which cities should the MVP cover? London alone is a large data problem. Recommending London + one secondary city (Manchester or Bristol) to balance coverage with data quality. What is the founder's preference and what does the budget support?
+
+Q2: Data Acquisition Budget
+Manual data entry and commercial data agreements will require budget. What is the available runway for data acquisition in Phase 0-1? This determines whether we start with a curated top-50-locations approach or attempt broad coverage from day one.
+
+Q3: Legal Review of Deep-Linking
+Deep-linking to provider payment screens may require explicit commercial agreements in some cases, or may trigger objections from providers. Has legal counsel reviewed the intended deep-link approach? Are there ToS risks with any specific providers?
+
+Q4: PWA vs Native App
+A Progressive Web App (PWA) is faster to build and avoids app store review delays, but has limitations on GPS background access and deep-link handling. Is the team comfortable launching Phase 1 as a PWA, or is native app required from day one?
+
+Q5: Team Composition
+The MVP requires at minimum: one full-stack engineer (React/Node/PostGIS), one data/GIS specialist (or outsourced data loading), and one mobile developer for GPS and deep-link testing. What is the current team? What is outsourced?
+
+Q6: Parking PCN Liability Disclaimer
+If ParkBridge surfaces incorrect provider or zone information and a user receives a PCN, what is the liability position? This needs a clear Terms of Service disclaimer and a UI-level 'always verify against signage' message. Has this been considered?
+
+Q7: Brand and Naming
+Is ParkBridge confirmed as the product name? Trademark availability in the UK should be checked before build begins. A short .co.uk and .com domain check is also recommended.
+
+Q8: Relationship with Providers
+Has any outreach been made to JustPark, RingGo, APCOA, or the NPP team? Even informal conversations at this stage would validate the commercial model and potentially unlock early data sharing agreements.
+
+Q9: Monetisation Timing
+The document recommends no monetisation in Phase 1. Is the founder and investor expectation aligned on this? If there is pressure to show revenue earlier, the pre-booking commission model could be activated in Month 4-5 with less risk than performance fees.
+
+Q10: Accessibility Standards
+Should ParkBridge target WCAG 2.1 AA compliance from launch? Given the likely overlap with mobility-impaired users (Blue Badge holders), this may be both a commercial differentiator and a reputational risk if ignored.
+
+ParkBridge PRD v0.1 | DRAFT | Confidential | June 2026

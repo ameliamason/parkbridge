@@ -1,0 +1,287 @@
+/* ParkBridge — low-fi wireframe kit
+   Brand-hint palette + sketch treatment + phone shell + components.
+   Tweaks drive everything via body classes / CSS vars (see wireframes.jsx). */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Caveat:wght@500;600;700&display=swap');
+
+:root{
+  --paper:  oklch(0.985 0.006 95);
+  --paper2: oklch(0.955 0.009 95);
+  --panel:  oklch(0.93 0.010 95);
+  --ink:    oklch(0.29 0.022 262);
+  --ink2:   oklch(0.50 0.020 262);
+  --ink3:   oklch(0.68 0.015 262);
+  --line:   oklch(0.29 0.022 262 / .9);
+  --hair:   oklch(0.29 0.022 262 / .28);
+  --map:    oklch(0.935 0.006 250);
+  --mapblock: oklch(0.905 0.008 250);
+  --road:   oklch(0.80 0.008 250);
+  --you:    oklch(0.46 0.03 262);
+
+  --accent:    oklch(0.55 0.15 250);   /* cobalt — the one “pay / parked” hero colour */
+  --accent-ink: oklch(0.99 0 0);
+  --park:      var(--accent);           /* at-car shares the single hero colour */
+  --park-ink:  var(--accent-ink);
+  --sponsor:   oklch(0.80 0.085 85);
+  --pay:       oklch(0.58 0.13 150);   /* green — “go / confirm”, ONLY on the real payment button */
+  --pay-ink:   oklch(0.99 0 0);
+
+  --r1: 255px 14px 225px 14px/14px 225px 14px 255px;
+  --r2: 14px 230px 14px 230px/220px 14px 220px 14px;
+  --r3: 200px 18px 180px 20px/18px 190px 16px 210px;
+  --rot: -0.5deg;
+
+  --fui: 'Space Grotesk', system-ui, sans-serif;
+  --fmono: 'Space Mono', ui-monospace, monospace;
+  --fhand: 'Caveat', 'Comic Sans MS', cursive;
+}
+
+/* ── Accent tweak ───────────────────────────────────────────── */
+body.acc-cobalt { --accent: oklch(0.55 0.15 250); --accent-ink: oklch(0.99 0 0); }
+body.acc-teal   { --accent: oklch(0.56 0.095 205); --accent-ink: oklch(0.99 0 0); }
+body.acc-violet { --accent: oklch(0.52 0.16 292); --accent-ink: oklch(0.99 0 0); }
+
+/* ── Blueprint surface tweak ────────────────────────────────── */
+body.bp{
+  --paper:  oklch(0.30 0.045 255);
+  --paper2: oklch(0.34 0.045 255);
+  --panel:  oklch(0.38 0.045 255);
+  --ink:    oklch(0.92 0.045 218);
+  --ink2:   oklch(0.78 0.05 220);
+  --ink3:   oklch(0.62 0.05 222);
+  --line:   oklch(0.92 0.045 218 / .85);
+  --hair:   oklch(0.92 0.045 218 / .26);
+  --map:    oklch(0.34 0.05 255);
+  --mapblock: oklch(0.39 0.05 255);
+  --road:   oklch(0.55 0.06 235);
+  --you:    oklch(0.78 0.12 220);
+}
+
+/* ── Sketch intensity tweak ─────────────────────────────────── */
+.sk{ border:2px solid var(--ink); border-radius: var(--r1); background:var(--paper); }
+.sk.r2{ border-radius: var(--r2); }
+.sk.r3{ border-radius: var(--r3); }
+body.sk-sketchy .sk{ transform: rotate(var(--rot)); }
+body.sk-sketchy .sk.r2{ --rot: 0.5deg; }
+body.sk-sketchy .sk.r3{ --rot: -0.35deg; }
+body.sk-crisp .sk{ border-radius: 12px !important; transform:none !important; }
+body.sk-crisp .sk.tight{ border-radius:8px !important; }
+body.sk-wobbly .sk{ filter: url(#wf-rough); }
+body.sk-wobbly .sk{ --rot: -0.9deg; }
+body.sk-wobbly .sk.r2{ --rot: 0.9deg; }
+
+/* ── Annotations toggle ─────────────────────────────────────── */
+body.annot-off .annot{ display:none; }
+
+/* ─────────────────────────────────────────────────────────────
+   Phone shell
+   ───────────────────────────────────────────────────────────── */
+.ab{ position:relative; width:100%; height:100%; background:var(--paper); overflow:hidden;
+     font-family:var(--fui); color:var(--ink); }
+body.bp .ab{ background: oklch(0.26 0.045 255); }
+
+.phone{ position:absolute; top:14px; left:50%; transform:translateX(-50%);
+        width:320px; height:672px; background:var(--paper);
+        border:2.5px solid var(--ink); border-radius:40px; overflow:hidden;
+        box-shadow: 0 18px 40px oklch(0.29 0.02 262 / .14); }
+body.bp .phone{ box-shadow: 0 18px 44px oklch(0.1 0.05 255 / .5); }
+.screen{ position:absolute; inset:0; display:flex; flex-direction:column;
+         background:var(--paper); }
+.statusbar{ flex:0 0 auto; height:30px; display:flex; align-items:center;
+            justify-content:space-between; padding:0 22px; font-family:var(--fmono);
+            font-size:11px; color:var(--ink2); letter-spacing:.5px; }
+.statusbar .dots{ display:flex; gap:3px; align-items:center; }
+.statusbar .dots i{ width:4px; height:4px; border-radius:50%; background:var(--ink2); }
+.homebar{ position:absolute; bottom:7px; left:50%; transform:translateX(-50%);
+          width:118px; height:4px; border-radius:3px; background:var(--ink); opacity:.6; z-index:40; }
+.body{ flex:1 1 auto; min-height:0; position:relative; display:flex; flex-direction:column; }
+
+/* ── Brand mark ─────────────────────────────────────────────── */
+.brand{ display:flex; align-items:center; gap:7px; }
+.brand .mk{ color:var(--accent); }
+.brand b{ font-weight:700; font-size:18px; letter-spacing:-.5px; }
+.brand small{ font-family:var(--fmono); font-size:8.5px; color:var(--ink3);
+              letter-spacing:1.5px; text-transform:uppercase; }
+
+/* ─────────────────────────────────────────────────────────────
+   Sketch map field
+   ───────────────────────────────────────────────────────────── */
+.map-region{ position:relative; overflow:hidden; flex:0 0 auto; height:228px; }
+body.map-first   .map-region{ height:300px; }
+body.map-balanced .map-region{ height:210px; }
+body.list-first  .map-region{ height:120px; }
+.map-region.strip{ height:96px !important; }
+.mapf{ position:absolute; inset:0; background:var(--map); overflow:hidden; }
+.mapf .blk{ position:absolute; background:var(--mapblock); border-radius:4px; }
+.mapf .road{ position:absolute; background:var(--road); border-radius:3px; }
+.mapf .water{ position:absolute; background: oklch(0.88 0.04 230); border-radius:30% 60% 40% 50%; }
+body.bp .mapf .water{ background: oklch(0.40 0.06 240); }
+
+.pin{ position:absolute; transform:translate(-50%,-100%); display:flex; flex-direction:column;
+      align-items:center; z-index:3; }
+.pin .bub{ font-family:var(--fmono); font-size:10px; font-weight:700; color:var(--accent-ink);
+           background:var(--accent); border:1.5px solid var(--ink); border-radius:11px;
+           padding:2px 6px; white-space:nowrap; line-height:1.1; }
+.pin .stem{ width:2px; height:7px; background:var(--ink); }
+.pin.alt .bub{ background:var(--paper); color:var(--ink); }
+.pin.car .bub{ background:var(--park); color:var(--park-ink); }
+.youdot{ position:absolute; width:16px; height:16px; border-radius:50%; background:var(--you);
+         border:2.5px solid var(--paper); transform:translate(-50%,-50%); z-index:4;
+         box-shadow:0 0 0 5px oklch(0.46 0.03 262 / .22); }
+body.bp .youdot{ box-shadow:0 0 0 5px oklch(0.78 0.12 220 / .25); }
+
+/* ── floating controls on map ───────────────────────────────── */
+.fab{ position:absolute; z-index:20; display:flex; align-items:center; gap:7px;
+      font-family:var(--fui); font-weight:600; font-size:13px;
+      padding:11px 15px; color:var(--park-ink); background:var(--park);
+      border:2px solid var(--ink); border-radius:30px;
+      box-shadow:0 6px 16px oklch(0.29 0.02 262 / .2); }
+.fab .ic{ width:16px;height:16px; }
+
+/* ─────────────────────────────────────────────────────────────
+   Common UI atoms
+   ───────────────────────────────────────────────────────────── */
+.search{ display:flex; align-items:center; gap:9px; padding:12px 14px;
+         background:var(--paper); color:var(--ink2); font-size:13.5px; }
+.search.filled{ color:var(--ink); font-weight:600; }
+.search .mag{ width:16px; height:16px; flex:0 0 auto; color:var(--ink3); }
+.search .ph{ font-family:var(--fui); }
+
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      font-family:var(--fui); font-weight:600; font-size:14px; cursor:default;
+      padding:13px 16px; color:var(--accent-ink); background:var(--accent);
+      border:2px solid var(--ink); }
+.btn.block{ width:100%; }
+.btn.big{ font-size:16px; padding:16px; }
+.btn.park{ background:var(--park); color:var(--park-ink); }
+.btn.pay{ background:var(--pay); color:var(--pay-ink); border-color:var(--ink); }
+.btn.ghost{ background:transparent; color:var(--ink); }
+.btn.ink{ background:var(--ink); color:var(--paper); }
+
+.chip{ display:inline-flex; align-items:center; gap:5px; font-family:var(--fui);
+       font-size:11px; font-weight:500; color:var(--ink2); background:var(--paper2);
+       border:1.5px solid var(--hair); border-radius:20px; padding:4px 9px; white-space:nowrap; }
+.chip.on{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.chip.warn{ color: oklch(0.50 0.11 68); border-color: oklch(0.66 0.13 70 / .55); background: oklch(0.95 0.04 82); }
+.chip.sponsor{ background:var(--sponsor); color:oklch(0.3 0.04 85); border-color:transparent; }
+body.bp .chip.warn{ color: oklch(0.82 0.12 78); background: transparent; }
+
+.row{ display:flex; align-items:center; gap:10px; padding:11px 13px; }
+.row + .row{ border-top:1.5px solid var(--hair); }
+.logo{ flex:0 0 auto; width:38px; height:38px; border:1.5px solid var(--ink);
+       border-radius:9px; display:flex; align-items:center; justify-content:center;
+       background:repeating-linear-gradient(45deg, var(--paper2) 0 5px, transparent 5px 10px);
+       font-family:var(--fmono); font-size:8px; font-weight:700; color:var(--ink2);
+       text-align:center; line-height:1; overflow:hidden; }
+.row .meta{ flex:1 1 auto; min-width:0; }
+.row .meta b{ font-size:13.5px; font-weight:600; display:block; letter-spacing:-.2px; }
+.row .meta span{ font-size:11px; color:var(--ink2); font-family:var(--fmono); }
+.row .price{ flex:0 0 auto; text-align:right; }
+.row .price b{ font-size:15px; font-weight:700; }
+.row .price span{ font-size:10px; color:var(--ink3); font-family:var(--fmono); display:block; }
+
+.placeholder{ background:repeating-linear-gradient(45deg, var(--paper2) 0 7px, transparent 7px 14px);
+              border:1.5px dashed var(--hair); display:flex; align-items:center; justify-content:center;
+              font-family:var(--fmono); font-size:10px; color:var(--ink3); text-align:center;
+              letter-spacing:.5px; }
+
+.zone{ font-family:var(--fmono); font-weight:700; letter-spacing:1px; }
+.conf{ display:inline-flex; align-items:center; gap:6px; font-family:var(--fmono);
+       font-size:11px; color:var(--ink2); }
+.conf .bar{ width:46px; height:6px; border:1.5px solid var(--ink); border-radius:4px; overflow:hidden; }
+.conf .bar i{ display:block; height:100%; background:var(--accent); }
+
+.label{ font-family:var(--fmono); font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase;
+        color:var(--ink3); }
+
+/* ── bottom sheet ───────────────────────────────────────────── */
+.sheet{ position:absolute; left:0; right:0; bottom:0; background:var(--paper);
+        border-top:2.5px solid var(--ink); border-radius:24px 24px 0 0; z-index:18;
+        box-shadow:0 -10px 30px oklch(0.29 0.02 262 / .14); display:flex; flex-direction:column; }
+body.bp .sheet{ box-shadow:0 -10px 30px oklch(0.1 0.05 255 / .5); }
+.grab{ width:38px; height:4px; border-radius:3px; background:var(--ink3);
+       margin:9px auto 4px; flex:0 0 auto; }
+
+/* ── bottom nav ─────────────────────────────────────────────── */
+.tabbar{ flex:0 0 auto; display:flex; border-top:2px solid var(--ink); background:var(--paper2);
+         padding:8px 4px 16px; }
+.tabbar .tab{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+              font-family:var(--fui); font-size:9.5px; color:var(--ink3); font-weight:500; }
+.tabbar .tab .ic{ width:20px; height:20px; }
+.tabbar .tab.on{ color:var(--accent); }
+.tabbar .tab.raised{ color:var(--accent); font-weight:700; }
+.tabbar .tab.raised .ic{ width:50px; height:50px; margin-top:-26px; border-radius:50%;
+  background:var(--accent); color:var(--accent-ink); border:2.5px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 7px 16px oklch(0.5 0.04 262 / .32); }
+
+/* ── mode tiles (Direction A) ───────────────────────────────── */
+.tile{ display:flex; flex-direction:column; gap:8px; padding:18px; min-height:128px;
+       justify-content:space-between; }
+.tile .ic{ width:30px; height:30px; }
+.tile h3{ font-size:19px; font-weight:700; letter-spacing:-.4px; margin:0; }
+.tile p{ font-size:11.5px; color:var(--ink2); margin:0; line-height:1.35; }
+.tile.go{ background:var(--accent); color:var(--accent-ink); }
+.tile.go p, .tile.go .label{ color:var(--accent-ink); opacity:.85; }
+.tile.park{ background:var(--park); color:var(--park-ink); }
+.tile.park p, .tile.park .label{ color:var(--park-ink); opacity:.88; }
+
+/* ── context banner (Direction C) ───────────────────────────── */
+.ctx{ display:flex; align-items:center; gap:9px; padding:9px 13px; font-size:11.5px;
+      font-family:var(--fmono); color:var(--ink2); background:var(--paper2);
+      border-bottom:1.5px solid var(--hair); }
+.ctx .blip{ width:8px; height:8px; border-radius:50%; background:var(--accent);
+            box-shadow:0 0 0 4px oklch(0.55 0.02 262 / .16); flex:0 0 auto; }
+.ctx.parked .blip{ background:var(--accent); }
+
+/* ─────────────────────────────────────────────────────────────
+   Annotation (handwritten caption under each phone)
+   ───────────────────────────────────────────────────────────── */
+.annot{ position:absolute; bottom:10px; left:14px; right:14px; z-index:2;
+        font-family:var(--fhand); color:var(--ink2); font-size:17px; line-height:1.1;
+        display:flex; align-items:flex-start; gap:7px; }
+.annot .arr{ flex:0 0 auto; color:var(--accent); margin-top:1px; }
+.annot b{ color:var(--ink); font-weight:700; }
+body.bp .annot{ color: oklch(0.82 0.05 220); }
+
+/* helpers */
+.pad{ padding:14px; }
+.col{ display:flex; flex-direction:column; }
+.gap6{ gap:6px; } .gap8{ gap:8px; } .gap10{ gap:10px; } .gap12{ gap:12px; }
+.between{ display:flex; align-items:center; justify-content:space-between; }
+.scrim{ position:absolute; inset:0; background:oklch(0.2 0.02 262 / .32); z-index:16; }
+.muted{ color:var(--ink2); }
+.tcent{ text-align:center; }
+.fmono{ font-family:var(--fmono); }
+.divider{ height:1.5px; background:var(--hair); margin:0; border:0; }
+
+/* ─────────────────────────────────────────────────────────────
+   Parked-first hierarchy — hero block + quiet secondary entry
+   ───────────────────────────────────────────────────────────── */
+.hero{ display:flex; flex-direction:column; gap:11px; padding:20px;
+       background:var(--accent); color:var(--accent-ink); }
+.hero .top{ display:flex; align-items:center; justify-content:space-between; }
+.hero .top .label{ color:var(--accent-ink); opacity:.8; }
+.hero h2{ margin:0; font-size:27px; font-weight:700; letter-spacing:-.7px; line-height:1.02; }
+.hero p{ margin:0; font-size:13px; line-height:1.4; opacity:.92; }
+.hero .act{ margin-top:4px; display:flex; align-items:center; justify-content:space-between;
+            background:oklch(1 0 0 / .16); border:1.5px solid oklch(1 0 0 / .5);
+            border-radius:34px; padding:13px 16px 13px 20px; font-weight:700; font-size:16px; }
+.hero .act.pay{ background:var(--pay); border-color:var(--ink); color:var(--pay-ink); }
+.hero .act.pay .disc{ background:oklch(1 0 0 / .22); border-color:oklch(1 0 0 / .55); }
+.hero .disc{ width:44px; height:44px; border-radius:50%; background:oklch(1 0 0 / .18);
+             border:1.5px solid oklch(1 0 0 / .45); display:flex; align-items:center;
+             justify-content:center; flex:0 0 auto; }
+.hero .conf{ color:var(--accent-ink); }
+.hero .conf .bar{ border-color:var(--accent-ink); }
+.hero .conf .bar i{ background:var(--accent-ink); }
+.hero .logo{ border-color:var(--accent-ink);
+             background:repeating-linear-gradient(45deg, oklch(1 0 0 / .22) 0 5px, transparent 5px 10px);
+             color:var(--accent-ink); }
+
+.secondary{ display:flex; align-items:center; gap:12px; padding:13px 14px; }
+.secondary .ic{ width:36px; height:36px; border-radius:9px; border:1.5px solid var(--hair);
+                display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:var(--paper2); }
+.secondary .meta{ flex:1 1 auto; min-width:0; }
+.secondary .meta b{ font-size:14px; font-weight:600; display:block; letter-spacing:-.2px; }
+.secondary .meta span{ font-size:11px; color:var(--ink2); }

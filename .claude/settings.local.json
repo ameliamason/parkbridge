@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/ameliabadeni/Downloads/design_handoff_parkbridge/ && echo \"---\" && ls /Users/ameliabadeni/Downloads/ | grep -i park)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
