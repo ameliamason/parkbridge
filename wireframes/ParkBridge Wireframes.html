@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ParkBridge · MVP Wireframes</title>
+<link rel="stylesheet" href="pb-kit.css">
+<style>
+  html, body { margin:0; min-height:100%; background:#f0eee9; font-family:'Space Grotesk', system-ui, sans-serif; color:var(--ink); }
+  #root { min-height:100vh; }
+  .page{ max-width:980px; margin:0 auto; padding:26px 24px 60px; display:flex; flex-direction:column; align-items:center; }
+
+  .pb-head{ width:100%; display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+
+  /* flow rail */
+  .flowrail{ display:flex; gap:26px; flex-wrap:wrap; justify-content:center; margin-bottom:22px; }
+  .track{ display:flex; align-items:center; gap:7px; }
+  .tracklabel{ font-family:var(--fmono); font-size:9px; letter-spacing:1.2px; color:var(--ink3);
+               border:1.5px solid var(--hair); border-radius:20px; padding:4px 9px; }
+  .tracklabel.park{ color:var(--accent); border-color:var(--accent); }
+  .step{ font-family:var(--fui); font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer;
+         padding:5px 11px; border-radius:20px; border:1.5px solid transparent; transition:.15s; white-space:nowrap; }
+  .step:hover{ color:var(--ink); background:oklch(0.29 0.022 262 / .06); }
+  .step.on{ color:var(--accent-ink); background:var(--accent); border-color:var(--ink); }
+
+  /* stage = phone + side margin notes */
+  .stage{ position:relative; width:100%; display:flex; justify-content:center; padding:6px 0 2px; }
+  .phone{ display:flex; flex-direction:column; }
+  .screenwrap{ position:relative; flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+  .screenwrap > .body{ flex:1 1 auto; min-height:0; }
+
+  .margin-note{ position:absolute; width:210px; display:flex; gap:8px; font-family:var(--fhand);
+                color:var(--ink2); font-size:18px; line-height:1.18; z-index:5; }
+  .margin-note.l{ right:calc(50% + 188px); text-align:right; flex-direction:row-reverse; }
+  .margin-note.r{ left:calc(50% + 188px); }
+  .margin-note .mn-arrow{ color:var(--accent); font-size:19px; flex:0 0 auto; }
+  .margin-note .mn-text{ flex:1 1 auto; }
+  @media (max-width: 900px){ .margin-note{ display:none; } }
+
+  /* caption */
+  .caption{ display:flex; justify-content:center; width:100%; margin-top:22px; }
+  .capn{ font-family:var(--fmono); font-weight:700; font-size:15px; color:var(--accent); }
+
+  @keyframes pbpulse{ from{ opacity:.55; transform:translate(-50%,-50%) scale(.6); } to{ opacity:0; transform:translate(-50%,-50%) scale(1); } }
+</style>
+</head>
+<body class="acc-cobalt sk-sketchy annot-on">
+  <!-- rough-edge filter for the wobbly sketch tweak -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="wf-rough">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="7" result="n"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="pb-parts.jsx"></script>
+  <script type="text/babel" src="pb-screens.jsx"></script>
+  <script type="text/babel" src="pb-app.jsx"></script>
+</body>
+</html>
