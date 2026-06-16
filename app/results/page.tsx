@@ -4,9 +4,15 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { MapPlaceholder } from "@/components/MapPlaceholder";
-import type { SearchResult } from "@/lib/types";
+import type { RpcSearchRow } from "@/lib/types";
 
 const FILTERS = ["Under £4", "Covered", "Accessible", "Pre-book", "On-street", "24h"];
+
+const LOADING_FALLBACK = (
+  <main className="flex h-dvh items-center justify-center">
+    <p className="text-sm text-gray-400">Loading…</p>
+  </main>
+);
 
 function ResultsContent() {
   const params = useSearchParams();
@@ -15,14 +21,14 @@ function ResultsContent() {
   const lat = parseFloat(params.get("lat") ?? "51.505");
   const lng = parseFloat(params.get("lng") ?? "-0.09");
 
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<RpcSearchRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sort, setSort] = useState<"near" | "cheap">("near");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!lat || !lng) return;
+    if (isNaN(lat) || isNaN(lng)) return;
     fetch(`/api/search?lat=${lat}&lng=${lng}`)
       .then((r) => r.json())
       .then((data) => {
@@ -41,17 +47,9 @@ function ResultsContent() {
   }
 
   const sorted = [...results].sort((a, b) => {
-    if (sort === "cheap") return a.tariff.price_per_hour_pence - b.tariff.price_per_hour_pence;
+    if (sort === "cheap") return a.price_per_hour_pence - b.price_per_hour_pence;
     return a.distance_metres - b.distance_metres;
   });
-
-  const pins = sorted.map((r) => ({
-    lat: r.lat,
-    lng: r.lng,
-    label: `£${(r.tariff.price_per_hour_pence / 100).toFixed(2)}`,
-    selected: r.id === selectedId,
-    onClick: () => setSelectedId(r.id),
-  }));
 
   return (
     <main className="flex h-dvh flex-col bg-white">
@@ -100,13 +98,12 @@ function ResultsContent() {
         </div>
       </div>
 
-      {/* Leaflet map */}
+      {/* Leaflet map — shows search centre only; RPC does not return per-result coordinates */}
       <MapPlaceholder
         className="h-48 shrink-0"
         lat={lat}
         lng={lng}
         zoom={15}
-        pins={pins}
         youAreHere
       />
 
@@ -125,15 +122,15 @@ function ResultsContent() {
 
       <ul className="flex-1 divide-y divide-gray-100 overflow-y-auto">
         {sorted.map((r) => (
-          <li key={r.id}>
+          <li key={r.location_id}>
             <button
-              onClick={() => setSelectedId(r.id)}
+              onClick={() => setSelectedId(r.location_id)}
               className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
-                r.id === selectedId ? "bg-blue-50" : ""
+                r.location_id === selectedId ? "bg-blue-50" : ""
               }`}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-500">
-                {r.provider.name.slice(0, 3).toUpperCase()}
+                {r.provider_name.slice(0, 3).toUpperCase()}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{r.name}</p>
@@ -143,7 +140,7 @@ function ResultsContent() {
               </div>
               <div className="shrink-0 text-right">
                 <p className="text-sm font-bold">
-                  £{(r.tariff.price_per_hour_pence / 100).toFixed(2)}
+                  £{(r.price_per_hour_pence / 100).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400">/hr</p>
               </div>
@@ -167,7 +164,7 @@ function ResultsContent() {
 
 export default function ResultsPage() {
   return (
-    <Suspense>
+    <Suspense fallback={LOADING_FALLBACK}>
       <ResultsContent />
     </Suspense>
   );

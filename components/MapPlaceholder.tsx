@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Map, Marker, TileLayer } from "leaflet";
+import type { Map, Marker } from "leaflet";
 
 interface Pin {
   lat: number;
@@ -36,6 +36,7 @@ export function MapPlaceholder({
   const mapRef = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const youRef = useRef<Marker | null>(null);
+  const pendingViewRef = useRef<[number, number, number] | null>(null);
 
   // Initialise map once
   useEffect(() => {
@@ -67,6 +68,13 @@ export function MapPlaceholder({
       } as Parameters<typeof L.tileLayer>[1]).addTo(map);
 
       mapRef.current = map;
+
+      // Apply any coordinate update that arrived before init completed
+      if (pendingViewRef.current) {
+        const [pLat, pLng, pZoom] = pendingViewRef.current;
+        map.setView([pLat, pLng], pZoom);
+        pendingViewRef.current = null;
+      }
     });
 
     return () => {
@@ -76,7 +84,11 @@ export function MapPlaceholder({
 
   // Update centre when lat/lng/zoom change
   useEffect(() => {
-    mapRef.current?.setView([lat, lng], zoom);
+    if (mapRef.current) {
+      mapRef.current.setView([lat, lng], zoom);
+    } else {
+      pendingViewRef.current = [lat, lng, zoom];
+    }
   }, [lat, lng, zoom]);
 
   // Sync pins
@@ -118,6 +130,18 @@ export function MapPlaceholder({
     });
   }, [lat, lng, youAreHere]);
 
+  // Inject Leaflet CSS into <head> once — placing it in JSX body is unreliable
+  useEffect(() => {
+    const id = "leaflet-css";
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.appendChild(link);
+    }
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -153,11 +177,6 @@ export function MapPlaceholder({
         }
       `}</style>
       <div ref={containerRef} className={`${className}`} />
-      {/* Leaflet CSS — loaded inline to avoid a separate link tag in layout */}
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      />
     </>
   );
 }

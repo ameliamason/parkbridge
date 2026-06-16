@@ -58,3 +58,32 @@ export interface SearchResult extends ParkingLocation {
   tariff: Tariff;
   distance_metres: number;
 }
+
+// Flat rows returned by Supabase RPCs (identify_parking_location, search_parking_locations)
+export interface RpcIdentifyRow {
+  location_id: string;
+  name: string;
+  type: string;
+  zone_code: string;
+  provider_id: string;
+  provider_name: string;
+  confidence_score: number;
+  price_per_hour_pence: number;
+  daily_max_pence: number | null;
+  deeplink_ios: string;
+  deeplink_android: string;
+  web_fallback_url: string;
+}
+
+export interface RpcSearchRow {
+  location_id: string;
+  name: string;
+  type: string;
+  zone_code: string;
+  distance_metres: number;
+  provider_id: string;
+  provider_name: string;
+  confidence_score: number;
+  price_per_hour_pence: number;
+  daily_max_pence: number | null;
+}

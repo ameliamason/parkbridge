@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
-  const radius = parseInt(searchParams.get("radius") ?? "400");
+  const radius = Math.min(parseInt(searchParams.get("radius") ?? "400"), 2000);
 
   if (!lat || !lng) {
     return NextResponse.json({ error: "lat and lng are required" }, { status: 400 });

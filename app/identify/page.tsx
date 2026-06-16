@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -11,21 +11,25 @@ export default function IdentifyPage() {
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     if (state !== "locating") return;
+    cancelledRef.current = false;
 
     const interval = setInterval(() => setProgress((p) => Math.min(95, p + 5)), 150);
 
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
+      (pos) => {
         clearInterval(interval);
+        if (cancelledRef.current) return;
         setProgress(100);
         const { latitude: lat, longitude: lng } = pos.coords;
         router.push(`/located?lat=${lat}&lng=${lng}`);
       },
       (err) => {
         clearInterval(interval);
+        if (cancelledRef.current) return;
         if (err.code === err.TIMEOUT || err.code === err.POSITION_UNAVAILABLE) {
           router.push("/fallback");
         } else {
@@ -36,7 +40,10 @@ export default function IdentifyPage() {
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
 
-    return () => clearInterval(interval);
+    return () => {
+      cancelledRef.current = true;
+      clearInterval(interval);
+    };
   }, [state, router]);
 
   if (state === "prompt") {

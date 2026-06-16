@@ -126,9 +126,15 @@ function CorrectContent() {
   );
 }
 
+const LOADING_FALLBACK = (
+  <main className="flex h-dvh items-center justify-center">
+    <p className="text-sm text-gray-400">Loading…</p>
+  </main>
+);
+
 export default function CorrectPage() {
   return (
-    <Suspense>
+    <Suspense fallback={LOADING_FALLBACK}>
       <CorrectContent />
     </Suspense>
   );

@@ -3,14 +3,25 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import type { IdentifyResult } from "@/lib/types";
+import type { RpcIdentifyRow } from "@/lib/types";
 import { buildDeepLink } from "@/lib/providers";
-import { getOrCreateSessionToken } from "@/lib/session";
+
+function platformDeepLink(row: RpcIdentifyRow): string {
+  const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+  const template = /android/i.test(ua) ? row.deeplink_android : row.deeplink_ios;
+  return buildDeepLink(template, row.zone_code, row.location_id);
+}
+
+const LOADING_FALLBACK = (
+  <main className="flex h-dvh items-center justify-center">
+    <p className="text-sm text-gray-400">Loading…</p>
+  </main>
+);
 
 function LocatedContent() {
   const params = useSearchParams();
   const router = useRouter();
-  const [result, setResult] = useState<IdentifyResult | null>(null);
+  const [result, setResult] = useState<RpcIdentifyRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [elapsed, setElapsed] = useState(0);
 
@@ -33,13 +44,6 @@ function LocatedContent() {
         setLoading(false);
       })
       .catch(() => router.replace("/fallback"));
-
-    // Track session
-    fetch("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_token: getOrCreateSessionToken(), lat, lng }),
-    }).catch(() => {});
   }, [lat, lng, router]);
 
   if (loading) {
@@ -66,14 +70,7 @@ function LocatedContent() {
     );
   }
 
-  const { location, provider, tariff } = result;
-  const confidence = result.confidence_score;
-
-  const deepLink = buildDeepLink(
-    provider.deeplink_ios,
-    location.zone_code,
-    location.id,
-  );
+  const deepLink = platformDeepLink(result);
 
   return (
     <main className="flex h-dvh flex-col overflow-y-auto bg-white">
@@ -89,11 +86,11 @@ function LocatedContent() {
             IDENTIFIED IN {elapsed}s · GPS ±8m
           </span>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold">{confidence}%</span>
+            <span className="text-xs font-bold">{result.confidence_score}%</span>
             <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-100">
               <div
                 className="h-full rounded-full bg-[oklch(0.55_0.15_250)]"
-                style={{ width: `${confidence}%` }}
+                style={{ width: `${result.confidence_score}%` }}
               />
             </div>
           </div>
@@ -103,32 +100,32 @@ function LocatedContent() {
         <div className="space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold">
-              {provider.name.slice(0, 3).toUpperCase()}
+              {result.provider_name.slice(0, 3).toUpperCase()}
             </span>
             <div>
-              <p className="text-base font-bold">{provider.name}</p>
-              <p className="text-xs text-gray-500">{location.name}</p>
+              <p className="text-base font-bold">{result.provider_name}</p>
+              <p className="text-xs text-gray-500">{result.name}</p>
             </div>
           </div>
 
           <div className="rounded-xl bg-gray-50 px-4 py-3">
             <p className="font-mono text-xs tracking-widest text-gray-400">ZONE / LOCATION CODE</p>
-            <p className="mt-1 font-mono text-2xl font-bold tracking-wide">{location.zone_code}</p>
+            <p className="mt-1 font-mono text-2xl font-bold tracking-wide">{result.zone_code}</p>
           </div>
 
           <div className="flex items-end justify-between">
             <div>
               <p className="font-mono text-xs tracking-widest text-gray-400">TARIFF</p>
               <p className="text-xl font-bold">
-                £{(tariff.price_per_hour_pence / 100).toFixed(2)}
+                £{(result.price_per_hour_pence / 100).toFixed(2)}
                 <span className="ml-1 text-sm font-normal text-gray-400">per hour</span>
               </p>
             </div>
-            {tariff.daily_max_pence && (
+            {result.daily_max_pence && (
               <div className="text-right">
                 <p className="font-mono text-xs tracking-widest text-gray-400">CAP</p>
                 <p className="text-sm font-bold">
-                  £{(tariff.daily_max_pence / 100).toFixed(0)} daily
+                  £{(result.daily_max_pence / 100).toFixed(0)} daily
                 </p>
               </div>
             )}
@@ -140,9 +137,9 @@ function LocatedContent() {
           href={deepLink}
           className="flex w-full flex-col items-center gap-1 rounded-2xl bg-[oklch(0.58_0.13_150)] py-4 text-white"
         >
-          <span className="text-base font-bold">Pay with {provider.name} →</span>
+          <span className="text-base font-bold">Pay with {result.provider_name} →</span>
           <span className="font-mono text-xs opacity-90">
-            OPENS {provider.name.toUpperCase()} AT THE PAYMENT SCREEN
+            OPENS {result.provider_name.toUpperCase()} AT THE PAYMENT SCREEN
           </span>
         </a>
 
@@ -152,7 +149,7 @@ function LocatedContent() {
             ⚠ Always check the sign on street
           </span>
           <Link
-            href={`/correct?location=${location.id}`}
+            href={`/correct?location=${result.location_id}`}
             className="rounded-full border border-dashed border-gray-300 px-3 py-1.5 text-gray-500"
           >
             Not right? ⓘ
@@ -165,7 +162,7 @@ function LocatedContent() {
 
 export default function LocatedPage() {
   return (
-    <Suspense>
+    <Suspense fallback={LOADING_FALLBACK}>
       <LocatedContent />
     </Suspense>
   );
