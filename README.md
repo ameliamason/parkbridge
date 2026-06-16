@@ -2,7 +2,7 @@
 
 Mobile-first parking intelligence for UK drivers. Find and compare parking before you leave, or identify your provider and pay instantly once you've parked.
 
-**Stack:** Next.js 14 App Router · TypeScript (strict) · Tailwind CSS · Supabase (PostGIS) · Google Maps JavaScript API · Vercel
+**Stack:** Next.js 14 App Router · TypeScript (strict) · Tailwind CSS · Supabase (PostGIS) · Leaflet + OpenStreetMap · Vercel
 
 **PRD:** [`/wireframes/ParkBridge_PRD_v0.3.docx`](wireframes/ParkBridge_PRD_v0.3.docx)
 
@@ -14,7 +14,7 @@ Mobile-first parking intelligence for UK drivers. Find and compare parking befor
 - [ ] Copy `.env.example` → `.env.local` and fill in values
 - [ ] Create Supabase project, enable PostGIS, run `supabase/migrations/001_initial_schema.sql`
 - [ ] Run `npx tsx scripts/seed-providers.ts` to populate provider deep-links
-- [ ] Configure Google Maps API keys in Google Cloud Console (see PRD §8.4)
+- [ ] *(Phase 2 only)* Configure Google Maps API keys if switching from Leaflet
 - [ ] Set up Vercel project pointing at this repo (`main` → production, `develop` → staging)
 
 ## Development

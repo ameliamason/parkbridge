@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { MapPlaceholder } from "@/components/MapPlaceholder";
 import type { SearchResult } from "@/lib/types";
 
 const FILTERS = ["Under £4", "Covered", "Accessible", "Pre-book", "On-street", "24h"];
@@ -11,32 +12,25 @@ function ResultsContent() {
   const params = useSearchParams();
   const router = useRouter();
   const label = params.get("label") ?? "";
+  const lat = parseFloat(params.get("lat") ?? "51.505");
+  const lng = parseFloat(params.get("lng") ?? "-0.09");
 
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sort, setSort] = useState<"near" | "cheap">("near");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const placeId = params.get("placeId");
-    if (!placeId) return;
-
-    async function fetchCoords() {
-      const geocoder = new google.maps.Geocoder();
-      const result = await geocoder.geocode({ placeId: placeId! });
-      const loc = result.results[0]?.geometry.location;
-      if (!loc) return;
-
-      const res = await fetch(`/api/search?lat=${loc.lat()}&lng=${loc.lng()}`);
-      const data = await res.json();
-      setResults(data.results ?? []);
-      setLoading(false);
-    }
-
-    if (window.google?.maps) {
-      fetchCoords();
-    }
-  }, [params]);
+    if (!lat || !lng) return;
+    fetch(`/api/search?lat=${lat}&lng=${lng}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setResults(data.results ?? []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [lat, lng]);
 
   function toggleFilter(f: string) {
     setActiveFilters((prev) => {
@@ -51,9 +45,17 @@ function ResultsContent() {
     return a.distance_metres - b.distance_metres;
   });
 
+  const pins = sorted.map((r) => ({
+    lat: r.lat,
+    lng: r.lng,
+    label: `£${(r.tariff.price_per_hour_pence / 100).toFixed(2)}`,
+    selected: r.id === selectedId,
+    onClick: () => setSelectedId(r.id),
+  }));
+
   return (
     <main className="flex h-dvh flex-col bg-white">
-      {/* Search bar acting as back + label */}
+      {/* Search bar / back */}
       <div className="z-10 bg-white px-3 pb-2 pt-3 shadow-sm">
         <button
           onClick={() => router.back()}
@@ -81,7 +83,6 @@ function ResultsContent() {
           </svg>
         </button>
 
-        {/* Filter chips */}
         <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
           {FILTERS.map((f) => (
             <button
@@ -99,14 +100,17 @@ function ResultsContent() {
         </div>
       </div>
 
-      {/* Map placeholder */}
-      <div className="relative h-48 shrink-0 overflow-hidden bg-gray-100">
-        <div className="flex h-full items-center justify-center text-sm text-gray-400">
-          Map loads here · Google Maps JavaScript API
-        </div>
-      </div>
+      {/* Leaflet map */}
+      <MapPlaceholder
+        className="h-48 shrink-0"
+        lat={lat}
+        lng={lng}
+        zoom={15}
+        pins={pins}
+        youAreHere
+      />
 
-      {/* Results list */}
+      {/* Sort + count */}
       <div className="flex items-center justify-between px-4 py-2">
         <span className="font-mono text-xs tracking-widest text-gray-400">
           {loading ? "LOADING…" : `${sorted.length} RESULTS · WITHIN 400M`}
@@ -119,27 +123,31 @@ function ResultsContent() {
         </button>
       </div>
 
-      <ul className="flex-1 overflow-y-auto divide-y divide-gray-100">
+      <ul className="flex-1 divide-y divide-gray-100 overflow-y-auto">
         {sorted.map((r) => (
           <li key={r.id}>
-            <Link
-              href={`/locate?id=${r.id}`}
-              className="flex items-center gap-3 px-4 py-3"
+            <button
+              onClick={() => setSelectedId(r.id)}
+              className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
+                r.id === selectedId ? "bg-blue-50" : ""
+              }`}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-500">
                 {r.provider.name.slice(0, 3).toUpperCase()}
               </span>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{r.name}</p>
-                <p className="text-xs text-gray-500">{r.type} · {r.distance_metres}m</p>
+                <p className="text-xs text-gray-500">
+                  {r.type} · {r.distance_metres}m
+                </p>
               </div>
-              <div className="text-right shrink-0">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-bold">
                   £{(r.tariff.price_per_hour_pence / 100).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400">/hr</p>
               </div>
-            </Link>
+            </button>
           </li>
         ))}
       </ul>
