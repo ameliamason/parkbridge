@@ -48,7 +48,7 @@ export function MapPlaceholder({
       if (cancelled || !containerRef.current || mapRef.current) return;
 
       // Leaflet's default icon path breaks with bundlers — point to CDN
-      (L.Icon.Default as unknown as { _getIconUrl?: unknown }).prototype._getIconUrl = undefined;
+      delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
